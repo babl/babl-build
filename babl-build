@@ -1,0 +1,152 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+require 'json'
+require 'net/http'
+require 'thor'
+
+
+
+class CLI < Thor
+
+  def self.defaults
+    @defaults ||= begin
+      file = '.babl-build.yml'
+      if File.readable? file
+        YAML.load_file(file)
+      else
+        {}
+      end
+    end
+  end
+
+  class_option :dry_run, type: :boolean, default: false
+  class_option :config_file, default: "#{Dir.home}/.babl/build-config.yml"
+  class_option :cpus, type: :numeric, default: (defaults[:cpu] or 0.1)
+  class_option :mem, type: :numeric, default: (defaults[:mem] or 8)
+  class_option :cmd, type: :string, default: (defaults[:cmd] or 'PORT=4444 babl-server --cmd /bin/app')
+  class_option :type, type: :string, default: (defaults[:type] or 'babl')
+
+
+
+  no_commands do
+
+    def _module
+      @_module ||= File.basename(Dir.pwd)
+    end
+
+    def id
+      "#{options[:type]}-#{_module}"
+    end
+
+    def _version
+      'v' + `git rev-list HEAD --count`.strip
+    end
+
+    def image
+      "registry.babl.sh:5000/#{id}:#{_version}"
+    end
+
+    def conf
+      @conf ||= begin
+        c = YAML.load_file(options[:config_file])
+        c['id'] = id
+        c['container']['docker']['image'] = image
+        c['cpus'] = options[:cpus]
+        c['mem'] = options[:mem]
+        c['cmd'] = options[:cmd]
+        c['env']['SERVICE_TAGS'] = options[:type]
+        c['env']['BABL_MODULE'] = _module
+        (self.class.defaults[:env] or {}).each do |(k,v)|
+          c['env'][k] = v
+        end
+        c
+      end
+    end
+
+    def execute cmd
+      puts cmd
+      system cmd unless options[:dry_run]
+    end
+
+  end
+
+
+
+  desc "build MODULE", "Build Docker image for MODULE"
+  option :no_cache, type: :boolean, default: false
+  def build
+    execute "docker build -t #{image}#{" --no-cache" if options[:no_cache]} ."
+  end
+
+
+  desc "build-base", "(Re)Build base Docker image for all module to inherit from"
+  def build_base
+    execute "docker build -t saas_module --no-cache _base"
+  end
+
+
+  desc "version", "Prints the current version to be deployed if VERSION file is available"
+  def version
+    puts _version
+  end
+
+
+  desc "config MODULE", "Print the Marathon JSON config for MODULE"
+  def config
+    puts JSON.dump conf
+  end
+
+
+  desc "push MODULE", "Push Docker image for MODULE to remote registry"
+  def push
+    execute "docker push #{image}"
+  end
+
+
+  desc "deploy MODULE", "Deploy a Babl module"
+  def deploy
+    uri = URI('http://127.0.0.1:8080/v2/apps')
+    req = Net::HTTP::Post.new(uri)
+    req.body = JSON.dump conf
+    req.content_type = 'application/json'
+
+    res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+      http.request(req)
+    end
+
+    case res
+    when Net::HTTPSuccess, Net::HTTPRedirection
+      puts res.body
+    else
+      res.value
+    end
+  end
+
+
+  desc "destroy MODULE", "Destroy a Babl module"
+  def destroy
+    execute "curl -s -X DELETE 'http://127.0.0.1:8080/v2/apps/#{id}'"
+  end
+
+
+  desc "dist MODULE", "build & push & destroy & deploy"
+  def dist
+    build
+    push
+    destroy
+    deploy
+  end
+
+
+  desc "play MODULE", "Plays (runs) a local built Babl module for development/debugging purpose"
+  def play
+    execute "docker run -it --rm -p 4444:4444 -e BABL_MODULE=#{_module} #{image}"
+  end
+
+end
+
+
+
+CLI.start(ARGV)
+

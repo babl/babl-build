@@ -1,0 +1,21 @@
+id: ...
+container:
+  type: DOCKER
+  docker:
+    image: ...
+    forcePullImage: true
+    network: BRIDGE
+    portMappings:
+      -
+        containerPort: 4444
+        hostPort: 0
+        protocol: tcp
+
+instances: 1
+cpus: ...
+mem: 8...
+uris: []
+env:
+  SERVICE_TAGS: babl
+  BABL_MODULE: ...
+cmd: ...
