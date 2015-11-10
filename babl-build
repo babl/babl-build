@@ -77,6 +77,8 @@ class CLI < Thor
   option :no_cache, type: :boolean, default: false
   def build
     execute "docker build -t #{image}#{" --no-cache" if options[:no_cache]} ."
+    latest = image.sub(/:[^:]+$/, ':latest')
+    execute "docker tag -f #{image} #{latest}"
   end
 
 
