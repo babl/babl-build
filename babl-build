@@ -146,6 +146,11 @@ class CLI < Thor
     execute "docker run -it --rm -p 4444:4444 -e BABL_MODULE=#{_module} -e BABL_COMMAND=/bin/app #{image}"
   end
 
+  desc "sh", "Runs the container with a shell"
+  def sh
+    execute "docker run -it --rm -p 4444:4444 -e BABL_MODULE=#{_module} -e BABL_COMMAND=/bin/app #{image} sh"
+  end
+
 end
 
 
