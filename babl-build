@@ -24,7 +24,7 @@ class CLI < Thor
   class_option :config_file, default: "#{Dir.home}/.babl/build-config.yml"
   class_option :cpus, type: :numeric, default: (defaults[:cpu] or 0.1)
   class_option :mem, type: :numeric, default: (defaults[:mem] or 8)
-  class_option :cmd, type: :string, default: (defaults[:cmd] or 'PORT=4444 babl-server --cmd /bin/app')
+  class_option :cmd, type: :string, default: (defaults[:cmd] or 'babl-server')
   class_option :type, type: :string, default: (defaults[:type] or 'babl')
 
 
