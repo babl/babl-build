@@ -4,13 +4,7 @@ container:
   docker:
     image: ...
     forcePullImage: true
-    network: BRIDGE
-    portMappings:
-      -
-        containerPort: 4444
-        hostPort: 0
-        protocol: tcp
-
+    network: HOST
 instances: 1
 cpus: ...
 mem: 8...
