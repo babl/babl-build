@@ -26,9 +26,7 @@ class CLI < Thor
   class_option :marathon_host, default: "127.0.0.1"
 
 
-
   no_commands do
-
     def _module
       @_module ||= File.basename(Dir.pwd)
     end
@@ -72,12 +70,10 @@ class CLI < Thor
         end
       end
     end
-
   end
 
 
-
-  desc "build MODULE", "Build Docker image for MODULE"
+  desc "build", "Build Docker image"
   option :no_cache, type: :boolean, default: false
   def build
     execute "docker build -t #{image}#{" --no-cache" if options[:no_cache]} ."
@@ -85,26 +81,22 @@ class CLI < Thor
     execute "docker tag -f #{image} #{latest}"
   end
 
-
   desc "version", "Prints the current version to be deployed if VERSION file is available"
   def version
     puts _version
   end
 
-
-  desc "config MODULE", "Print the Marathon JSON config for MODULE"
+  desc "config", "Print the Marathon JSON config"
   def config
     puts JSON.dump conf
   end
 
-
-  desc "push MODULE", "Push Docker image for MODULE to remote registry"
+  desc "push", "Push Docker image to remote registry"
   def push
     execute "docker push #{image}"
   end
 
-
-  desc "deploy MODULE", "Deploy a Babl module"
+  desc "deploy", "Deploy a Babl module"
   def deploy
     uri = URI("http://#{options[:marathon_host]}:8080/v2/apps")
     req = Net::HTTP::Post.new(uri)
@@ -123,13 +115,12 @@ class CLI < Thor
     end
   end
 
-
-  desc "destroy MODULE", "Destroy a Babl module"
+  desc "destroy", "Destroy a Babl module"
   def destroy
     execute "curl -s -X DELETE 'http://#{options[:marathon_host]}:8080/v2/apps/#{id}'"
   end
 
-  desc "dist MODULE", "build & push & destroy & deploy"
+  desc "dist", "build & push & destroy & deploy"
   def dist
     build
     push
@@ -137,7 +128,7 @@ class CLI < Thor
     deploy
   end
 
-  desc "play MODULE", "Plays (runs) a local built Babl module for development/debugging purpose"
+  desc "play", "Plays (runs) a local built Babl module for development/debugging purpose"
   def play
     execute "docker run -it --rm -p 4444:4444 -e BABL_MODULE=#{_module} -e BABL_COMMAND=/bin/app #{container_options} #{image}"
   end
