@@ -4,16 +4,17 @@ require 'yaml'
 require 'json'
 require 'net/http'
 require 'thor'
+require 'active_support/core_ext/hash'
 
 
 
 class CLI < Thor
 
-  def self.defaults
-    @defaults ||= begin
+  def self.overwrites
+    @overwrites ||= begin
       file = '.babl-build.yml'
       if File.readable? file
-        YAML.load_file(file)
+        YAML.load_file(file).deep_symbolize_keys!
       else
         {}
       end
@@ -22,10 +23,7 @@ class CLI < Thor
 
   class_option :dry_run, type: :boolean, default: false
   class_option :config_file, default: "#{Dir.home}/.babl/build-config.yml"
-  class_option :cpus, type: :numeric, default: (defaults[:cpu] or 0.1)
-  class_option :mem, type: :numeric, default: (defaults[:mem] or 8)
-  class_option :cmd, type: :string, default: (defaults[:cmd] or 'babl-server')
-  class_option :type, type: :string, default: (defaults[:type] or 'babl')
+  class_option :marathon_host, default: "127.0.0.1"
 
 
 
@@ -36,7 +34,15 @@ class CLI < Thor
     end
 
     def id
-      "#{options[:type]}-#{_module}"
+      "#{type}-#{_module}"
+    end
+
+    def type
+      (env = self.class.overwrites[:env] and env[:SERVICE_TAGS]) or 'babl'
+    end
+
+    def container_options
+      ((c = self.class.overwrites[:container] and c[:options]) or []).join ' '
     end
 
     def _version
@@ -49,24 +55,22 @@ class CLI < Thor
 
     def conf
       @conf ||= begin
-        c = YAML.load_file(options[:config_file])
-        c['id'] = id
-        c['container']['docker']['image'] = image
-        c['cpus'] = options[:cpus]
-        c['mem'] = options[:mem]
-        c['cmd'] = options[:cmd]
-        c['env']['SERVICE_TAGS'] = options[:type]
-        c['env']['BABL_MODULE'] = _module
-        (self.class.defaults[:env] or {}).each do |(k,v)|
-          c['env'][k] = v
-        end
+        c = YAML.load_file(options[:config_file]).deep_symbolize_keys!
+        c = c.deep_merge(self.class.overwrites)
+        c[:id] = id
+        c[:container][:docker][:image] = image
+        c[:env][:BABL_MODULE] = _module
         c
       end
     end
 
     def execute cmd
       puts cmd
-      system cmd unless options[:dry_run]
+      unless options[:dry_run]
+        unless system cmd
+          exit $?.exitstatus
+        end
+      end
     end
 
   end
@@ -79,12 +83,6 @@ class CLI < Thor
     execute "docker build -t #{image}#{" --no-cache" if options[:no_cache]} ."
     latest = image.sub(/:[^:]+$/, ':latest')
     execute "docker tag -f #{image} #{latest}"
-  end
-
-
-  desc "build-base", "(Re)Build base Docker image for all module to inherit from"
-  def build_base
-    execute "docker build -t saas_module --no-cache _base"
   end
 
 
@@ -108,7 +106,7 @@ class CLI < Thor
 
   desc "deploy MODULE", "Deploy a Babl module"
   def deploy
-    uri = URI('http://127.0.0.1:8080/v2/apps')
+    uri = URI("http://#{options[:marathon_host]}:8080/v2/apps")
     req = Net::HTTP::Post.new(uri)
     req.body = JSON.dump conf
     req.content_type = 'application/json'
@@ -128,9 +126,8 @@ class CLI < Thor
 
   desc "destroy MODULE", "Destroy a Babl module"
   def destroy
-    execute "curl -s -X DELETE 'http://127.0.0.1:8080/v2/apps/#{id}'"
+    execute "curl -s -X DELETE 'http://#{options[:marathon_host]}:8080/v2/apps/#{id}'"
   end
-
 
   desc "dist MODULE", "build & push & destroy & deploy"
   def dist
@@ -140,20 +137,17 @@ class CLI < Thor
     deploy
   end
 
-
   desc "play MODULE", "Plays (runs) a local built Babl module for development/debugging purpose"
   def play
-    execute "docker run -it --rm -p 4444:4444 -e BABL_MODULE=#{_module} -e BABL_COMMAND=/bin/app #{image}"
+    execute "docker run -it --rm -p 4444:4444 -e BABL_MODULE=#{_module} -e BABL_COMMAND=/bin/app #{container_options} #{image}"
   end
 
   desc "sh", "Runs the container with a shell"
   def sh
-    execute "docker run -it --rm -p 4444:4444 -e BABL_MODULE=#{_module} -e BABL_COMMAND=/bin/app #{image} sh"
+    execute "docker run -it --rm -p 4444:4444 -e BABL_MODULE=#{_module} -e BABL_COMMAND=/bin/app #{container_options} #{image} sh"
   end
 
 end
 
 
-
 CLI.start(ARGV)
-
