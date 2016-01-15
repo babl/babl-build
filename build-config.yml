@@ -6,11 +6,11 @@ container:
     forcePullImage: true
     network: HOST
 instances: 1
-cpus: ...
-mem: 8...
+cpus: 0.1
+mem: 8
 uris: []
 env:
   SERVICE_TAGS: babl
   BABL_MODULE: ...
   BABL_COMMAND: /bin/app
-cmd: ...
+cmd: babl-server
