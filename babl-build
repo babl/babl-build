@@ -22,7 +22,7 @@ class CLI < Thor
   end
 
   class_option :dry_run, type: :boolean, default: false
-  class_option :config_file, default: "#{Dir.home}/.babl/build-config.yml"
+  class_option :config_file, default: "#{Dir.home}/.babl-build.yml"
   class_option :marathon_host, default: "127.0.0.1"
 
 
