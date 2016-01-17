@@ -51,6 +51,10 @@ class CLI < Thor
       "registry.babl.sh:5000/#{id}:#{_version}"
     end
 
+    def image_latest
+      image.sub(/:[^:]+$/, ':latest')
+    end
+
     def conf
       @conf ||= begin
         c = YAML.load_file(options[:config_file]).deep_symbolize_keys!
@@ -77,8 +81,7 @@ class CLI < Thor
   option :no_cache, type: :boolean, default: false
   def build
     execute "docker build -t #{image}#{" --no-cache" if options[:no_cache]} ."
-    latest = image.sub(/:[^:]+$/, ':latest')
-    execute "docker tag -f #{image} #{latest}"
+    execute "docker tag -f #{image} #{image_latest}"
   end
 
   desc "version", "Prints the current version to be deployed if VERSION file is available"
@@ -94,6 +97,7 @@ class CLI < Thor
   desc "push", "Push Docker image to remote registry"
   def push
     execute "docker push #{image}"
+    execute "docker push #{image_latest}"
   end
 
   desc "deploy", "Deploy a Babl module"
