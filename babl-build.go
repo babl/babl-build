@@ -17,6 +17,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/imdario/mergo"
 	"gopkg.in/yaml.v2"
 )
 
@@ -126,7 +127,13 @@ func conf() config {
 		panic(err)
 	}
 	if contents, err = ioutil.ReadFile(".babl-build.yml"); err == nil {
-		yaml.Unmarshal(contents, &c)
+		var local config
+		if err := yaml.Unmarshal(contents, &local); err != nil {
+			panic(err)
+		}
+		if err := mergo.MergeWithOverwrite(&c, local); err != nil {
+			panic(err)
+		}
 	}
 	c.Id = id()
 	c.Container.Docker.Image = image()
