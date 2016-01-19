@@ -1,6 +1,6 @@
 package main
 
-//go:generate go-bindata -nocompress build-config.yaml
+//go:generate go-bindata -nocompress build-config.yml
 
 import (
 	"bytes"
@@ -112,7 +112,7 @@ func imageLatest() string {
 
 func conf() config {
 	var c config
-	contents, err := Asset("build-config.yaml")
+	contents, err := Asset("build-config.yml")
 	if err != nil {
 		panic(err)
 	}
