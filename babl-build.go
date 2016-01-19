@@ -1,5 +1,7 @@
 package main
 
+//go:generate go-bindata -nocompress build-config.yaml
+
 import (
 	"bytes"
 	"encoding/json"
@@ -10,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"os/user"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -51,8 +52,8 @@ type config struct {
 
 var (
 	// options
-	dryRun                   bool
-	configFile, marathonHost string
+	dryRun       bool
+	marathonHost string
 
 	// YAML "overwrites"
 	overwrites config
@@ -66,14 +67,6 @@ func getOutput(cmd string, args ...string) string {
 		panic(err)
 	}
 	return string(output)
-}
-
-func homeDir() string {
-	u, err := user.Current()
-	if err != nil {
-		panic(err)
-	}
-	return u.HomeDir
 }
 
 // non-command functions
@@ -119,7 +112,7 @@ func imageLatest() string {
 
 func conf() config {
 	var c config
-	contents, err := ioutil.ReadFile(configFile)
+	contents, err := Asset("build-config.yaml")
 	if err != nil {
 		panic(err)
 	}
@@ -319,8 +312,6 @@ func init() {
 
 	// init options
 	flag.BoolVar(&dryRun, "dry-run", false, "")
-	flag.StringVar(&configFile, "config-file",
-		homeDir()+"/.babl-build.yml", "")
 	flag.StringVar(&marathonHost, "marathon-host", "127.0.0.1", "")
 	flag.Usage = func() {
 		commands["help"].Func()
