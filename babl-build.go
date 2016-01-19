@@ -241,10 +241,11 @@ func init() {
 				if err != nil {
 					panic(err)
 				}
-				if resp.StatusCode < 200 || resp.StatusCode >= 400 {
+				if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 					panic(fmt.Errorf("HTTP DELETE request returned %s",
 						resp.Status))
 				}
+				_, _ = io.Copy(os.Stdout, resp.Body) // ignore error
 			},
 		},
 		"dist": {
