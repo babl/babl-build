@@ -145,7 +145,7 @@ func execute(name string, args ...string) {
 	fmt.Println(name + " " + strings.Join(args, " "))
 	if !dryRun {
 		cmd := exec.Command(name, args...)
-		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
+		cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
 		if err := cmd.Run(); err != nil {
 			if exitErr, ok := err.(*exec.ExitError); ok {
 				os.Exit(exitErr.Sys().(syscall.WaitStatus).ExitStatus())
