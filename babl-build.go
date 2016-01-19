@@ -225,7 +225,7 @@ func init() {
 			"Destroy a Babl module",
 			func(args ...string) {
 				execute("curl", "-s", "-X", "DELETE",
-					fmt.Sprintf("'http://%s:8080/v2/apps/%s'",
+					fmt.Sprintf("http://%s:8080/v2/apps/%s",
 						marathonHost, id()))
 			},
 		},
