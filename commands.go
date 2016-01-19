@@ -24,6 +24,8 @@ import (
 
 const retries = 3
 
+var stdout io.Writer = os.Stdout // allow reassignment
+
 // auxiliary functions
 
 func conf() config {
@@ -141,7 +143,7 @@ func init() {
 		"config": {
 			"Print the Marathon JSON config",
 			func(args ...string) {
-				err := json.NewEncoder(os.Stdout).Encode(conf())
+				err := json.NewEncoder(stdout).Encode(conf())
 				if err != nil {
 					panic(err)
 				}
@@ -174,8 +176,8 @@ func init() {
 						log.Fatal(err)
 					}
 
-					_, _ = io.Copy(os.Stdout, resp.Body) // ignore error
-					_ = resp.Body.Close()                // ignore error
+					_, _ = io.Copy(stdout, resp.Body) // ignore error
+					_ = resp.Body.Close()             // ignore error
 					if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 						log.Printf("HTTP POST request returned %s",
 							resp.Status)
@@ -202,7 +204,7 @@ func init() {
 				if err != nil {
 					log.Fatal(err)
 				}
-				_, _ = io.Copy(os.Stdout, resp.Body) // ignore error
+				_, _ = io.Copy(stdout, resp.Body) // ignore error
 				if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 					log.Fatalf("HTTP DELETE request returned %s", resp.Status)
 				}
