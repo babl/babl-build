@@ -231,9 +231,20 @@ func init() {
 		"destroy": {
 			"Destroy a Babl module",
 			func(args ...string) {
-				execute("curl", "-s", "-X", "DELETE",
+				req, err := http.NewRequest("DELETE",
 					fmt.Sprintf("http://%s:8080/v2/apps/%s",
-						marathonHost, id()))
+						marathonHost, id()), nil)
+				if err != nil {
+					panic(err)
+				}
+				resp, err := (&http.Client{}).Do(req)
+				if err != nil {
+					panic(err)
+				}
+				if resp.StatusCode < 200 || resp.StatusCode >= 400 {
+					panic(fmt.Errorf("HTTP DELETE request returned %s",
+						resp.Status))
+				}
 			},
 		},
 		"dist": {
