@@ -16,10 +16,13 @@ import (
 	"regexp"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/imdario/mergo"
 	"gopkg.in/yaml.v2"
 )
+
+const retries = 3
 
 // auxiliary functions
 
@@ -165,15 +168,25 @@ func init() {
 				}
 				req.Header.Set("Content-Type", "application/json")
 
-				resp, err := (&http.Client{}).Do(req)
-				if err != nil {
-					log.Fatal(err)
-				}
+				for i := 0; i < retries; i++ {
+					resp, err := (&http.Client{}).Do(req)
+					if err != nil {
+						log.Fatal(err)
+					}
 
-				if resp.StatusCode >= 200 && resp.StatusCode < 400 {
 					_, _ = io.Copy(os.Stdout, resp.Body) // ignore error
+					_ = resp.Body.Close()                // ignore error
+					if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+						log.Printf("HTTP POST request returned %s",
+							resp.Status)
+					}
+					if resp.StatusCode == http.StatusConflict && i < retries {
+						log.Print("Retrying in 1 second...")
+						time.Sleep(time.Second)
+						continue
+					}
+					break
 				}
-				_ = resp.Body.Close() // ignore error
 			},
 		},
 		"destroy": {
