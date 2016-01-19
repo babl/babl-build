@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -64,7 +65,7 @@ var (
 func getOutput(cmd string, args ...string) string {
 	output, err := exec.Command(cmd, args...).Output()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	return string(output)
 }
@@ -122,7 +123,7 @@ func conf() config {
 	if contents, err = ioutil.ReadFile(".babl-build.yml"); err == nil {
 		var local config
 		if err := yaml.Unmarshal(contents, &local); err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 		if err := mergo.MergeWithOverwrite(&c, local); err != nil {
 			panic(err)
@@ -143,7 +144,7 @@ func execute(name string, args ...string) {
 			if exitErr, ok := err.(*exec.ExitError); ok {
 				os.Exit(exitErr.Sys().(syscall.WaitStatus).ExitStatus())
 			} else {
-				panic(err)
+				log.Fatal(err)
 			}
 		}
 	}
@@ -157,6 +158,9 @@ type command struct {
 var commands map[string]command
 
 func init() {
+	// init logger
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+
 	// init overwrites
 	contents, err := ioutil.ReadFile(".babl-build.yml")
 	if err == nil {
@@ -206,13 +210,13 @@ func init() {
 				req, err := http.NewRequest("POST",
 					fmt.Sprintf("http://%s:8080/v2/apps", marathonHost), body)
 				if err != nil {
-					panic(err)
+					log.Fatal(err)
 				}
 				req.Header.Set("Content-Type", "application/json")
 
 				resp, err := (&http.Client{}).Do(req)
 				if err != nil {
-					panic(err)
+					log.Fatal(err)
 				}
 
 				if resp.StatusCode >= 200 && resp.StatusCode < 400 {
@@ -228,16 +232,15 @@ func init() {
 					fmt.Sprintf("http://%s:8080/v2/apps/%s",
 						marathonHost, id()), nil)
 				if err != nil {
-					panic(err)
+					log.Fatal(err)
 				}
 				resp, err := (&http.Client{}).Do(req)
 				if err != nil {
-					panic(err)
+					log.Fatal(err)
 				}
 				_, _ = io.Copy(os.Stdout, resp.Body) // ignore error
 				if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-					panic(fmt.Errorf("HTTP DELETE request returned %s",
-						resp.Status))
+					log.Fatalf("HTTP DELETE request returned %s", resp.Status)
 				}
 			},
 		},
