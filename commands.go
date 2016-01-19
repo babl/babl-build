@@ -5,7 +5,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -15,7 +14,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strings"
 	"syscall"
 
@@ -23,93 +21,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type config struct {
-	Id        string `yaml:"id" json:"id"`
-	Container struct {
-		Type   string `yaml:"type" json:"type"`
-		Docker struct {
-			Image          string `yaml:"image" json:"image"`
-			ForcePullImage bool   `yaml:"forcePullImage" json:"forcePullImage"`
-			Network        string `yaml:"network" json:"network"`
-		} `yaml:"docker" json:"docker"`
-		Options []string `yaml:"options" json:"options,omitempty"`
-		Volumes []struct {
-			HostPath      string `yaml:"hostPath" json:"hostPath"`
-			ContainerPath string `yaml:"containerPath" json:"containerPath"`
-			Mode          string `yaml:"mode" json:"mode"`
-		} `yaml:"volumes" json:"volumes,omitempty"`
-	} `yaml:"container" json:"container"`
-	Instances int      `yaml:"instances" json:"instances"`
-	Cpus      float64  `yaml:"cpus" json:"cpus"`
-	Mem       float64  `yaml:"mem" json:"mem"`
-	Uris      []string `yaml:"uris" json:"uris"`
-	Env       struct {
-		ServiceTags string `yaml:"SERVICE_TAGS" json:"SERVICE_TAGS"`
-		BablModule  string `yaml:"BABL_MODULE" json:"BABL_MODULE"`
-		BablCommand string `yaml:"BABL_COMMAND" json:"BABL_COMMAND"`
-	} `yaml:"env" json:"env"`
-	Cmd string `yaml:"cmd" json:"cmd"`
-}
-
-var (
-	// options
-	dryRun       bool
-	marathonHost string
-
-	// YAML "overwrites"
-	overwrites config
-)
-
 // auxiliary functions
-
-func getOutput(cmd string, args ...string) string {
-	output, err := exec.Command(cmd, args...).Output()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return string(output)
-}
-
-// non-command functions
-
-func module() string {
-	dir, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	return filepath.Base(dir)
-}
-
-func id() string {
-	return fmt.Sprintf("%s-%s", _type(), module())
-}
-
-func _type() string {
-	if tags := overwrites.Env.ServiceTags; tags != "" {
-		return tags
-	}
-	return "babl"
-}
-
-func containerOptions() []string {
-	if opts := overwrites.Container.Options; opts != nil {
-		return opts
-	}
-	return []string{}
-}
-
-func version() string {
-	return "v" + strings.TrimSpace(getOutput(
-		"git", "rev-list", "HEAD", "--count"))
-}
-
-func image() string {
-	return fmt.Sprintf("registry.babl.sh:5000/%s:%s", id(), version())
-}
-
-func imageLatest() string {
-	return regexp.MustCompile(":[^:]+$").ReplaceAllString(image(), ":latest")
-}
 
 func conf() config {
 	var c config
@@ -135,6 +47,13 @@ func conf() config {
 	return c
 }
 
+func containerOptions() []string {
+	if opts := overwrites.Container.Options; opts != nil {
+		return opts
+	}
+	return []string{}
+}
+
 func execute(name string, args ...string) {
 	fmt.Println(name + " " + strings.Join(args, " "))
 	if !dryRun {
@@ -150,6 +69,48 @@ func execute(name string, args ...string) {
 	}
 }
 
+func getOutput(cmd string, args ...string) string {
+	output, err := exec.Command(cmd, args...).Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(output)
+}
+
+func id() string {
+	return fmt.Sprintf("%s-%s", _type(), module())
+}
+
+func image() string {
+	return fmt.Sprintf("registry.babl.sh:5000/%s:%s", id(), version())
+}
+
+func imageLatest() string {
+	return regexp.MustCompile(":[^:]+$").ReplaceAllString(image(), ":latest")
+}
+
+func module() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	return filepath.Base(dir)
+}
+
+func _type() string {
+	if tags := overwrites.Env.ServiceTags; tags != "" {
+		return tags
+	}
+	return "babl"
+}
+
+func version() string {
+	return "v" + strings.TrimSpace(getOutput(
+		"git", "rev-list", "HEAD", "--count"))
+}
+
+// commands proper
+
 type command struct {
 	Desc string
 	Func func(...string)
@@ -158,16 +119,6 @@ type command struct {
 var commands map[string]command
 
 func init() {
-	// init logger
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
-
-	// init overwrites
-	contents, err := ioutil.ReadFile(".babl-build.yml")
-	if err == nil {
-		_ = yaml.Unmarshal(contents, &overwrites) // ignore error
-	}
-
-	// init commands
 	commands = map[string]command{
 		"build": {
 			"Build Docker image",
@@ -277,58 +228,7 @@ func init() {
 		},
 		"help": {
 			"Describe available commands",
-			func(args ...string) {
-				fmt.Fprintln(os.Stderr, "Commands:")
-				i, maxLen, names := 0, 0, make([]string, len(commands))
-				for name := range commands {
-					names[i] = name
-					if len(name) > maxLen {
-						maxLen = len(name)
-					}
-					i++
-				}
-				sort.Sort(sort.StringSlice(names))
-				formatString := fmt.Sprintf("  %%s %%-%ds  # %%s\n", maxLen)
-				for _, name := range names {
-					fmt.Fprintf(os.Stderr, formatString, os.Args[0], name,
-						commands[name].Desc)
-				}
-				fmt.Fprintln(os.Stderr)
-
-				fmt.Fprintln(os.Stderr, "Options:")
-				maxLen = 0
-				flag.VisitAll(func(f *flag.Flag) {
-					if len(f.Name)+4 > maxLen {
-						maxLen = len(f.Name) + 4
-					}
-				})
-				formatString = fmt.Sprintf("  %%-%ds  # Default: %%s\n",
-					maxLen)
-				flag.VisitAll(func(f *flag.Flag) {
-					fmt.Fprintf(os.Stderr, formatString, "[--"+f.Name+"]",
-						f.DefValue)
-				})
-				fmt.Fprintln(os.Stderr)
-			},
+			help,
 		},
-	}
-
-	// init options
-	flag.BoolVar(&dryRun, "dry-run", false, "")
-	flag.StringVar(&marathonHost, "marathon-host", "127.0.0.1", "")
-	flag.Usage = func() {
-		commands["help"].Func()
-	}
-}
-
-func main() {
-	flag.Parse()
-
-	if len(flag.Args()) == 0 {
-		commands["help"].Func()
-	} else if cmd, ok := commands[flag.Arg(0)]; ok {
-		cmd.Func(flag.Args()[1:]...)
-	} else {
-		fmt.Fprintf(os.Stderr, "Could not find command \"%s\".\n", flag.Arg(0))
 	}
 }
