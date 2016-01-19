@@ -15,6 +15,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"syscall"
 
 	"gopkg.in/yaml.v2"
 )
@@ -28,7 +29,12 @@ type config struct {
 			ForcePullImage bool   `yaml:"forcePullImage" json:"forcePullImage"`
 			Network        string `yaml:"network" json:"network"`
 		} `yaml:"docker" json:"docker"`
-		Options []string `yaml:"options" json:"options"`
+		Options []string `yaml:"options" json:"options,omitempty"`
+		Volumes []struct {
+			HostPath      string `yaml:"hostPath" json:"hostPath"`
+			ContainerPath string `yaml:"containerPath" json:"containerPath"`
+			Mode          string `yaml:"mode" json:"mode"`
+		} `yaml:"volumes" json:"volumes,omitempty"`
 	} `yaml:"container" json:"container"`
 	Instances int      `yaml:"instances" json:"instances"`
 	Cpus      float64  `yaml:"cpus" json:"cpus"`
@@ -119,12 +125,8 @@ func conf() config {
 	if err := yaml.Unmarshal(contents, &c); err != nil {
 		panic(err)
 	}
-	contents, err = ioutil.ReadFile(".babl-build.yml")
-	if err != nil {
-		panic(err)
-	}
-	if err := yaml.Unmarshal(contents, &c); err != nil {
-		panic(err)
+	if contents, err = ioutil.ReadFile(".babl-build.yml"); err == nil {
+		yaml.Unmarshal(contents, &c)
 	}
 	c.Id = id()
 	c.Container.Docker.Image = image()
@@ -132,11 +134,17 @@ func conf() config {
 	return c
 }
 
-func execute(cmd string, args ...string) {
-	fmt.Println(cmd + " " + strings.Join(args, " "))
+func execute(name string, args ...string) {
+	fmt.Println(name + " " + strings.Join(args, " "))
 	if !dryRun {
-		if err := exec.Command(cmd, args...).Run(); err != nil {
-			os.Exit(1)
+		cmd := exec.Command(name, args...)
+		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
+		if err := cmd.Run(); err != nil {
+			if exitErr, ok := err.(*exec.ExitError); ok {
+				os.Exit(exitErr.Sys().(syscall.WaitStatus).ExitStatus())
+			} else {
+				panic(err)
+			}
 		}
 	}
 }
@@ -306,7 +314,7 @@ func main() {
 	if len(flag.Args()) == 0 {
 		commands["help"].Func()
 	} else if cmd, ok := commands[flag.Arg(0)]; ok {
-		cmd.Func(flag.Args()...)
+		cmd.Func(flag.Args()[1:]...)
 	} else {
 		fmt.Fprintf(os.Stderr, "Could not find command \"%s\".\n", flag.Arg(0))
 	}
