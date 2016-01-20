@@ -159,18 +159,20 @@ func init() {
 		"deploy": {
 			"Deploy a Babl module",
 			func(args ...string) {
-				body := bytes.NewBuffer([]byte{})
-				if err := json.NewEncoder(body).Encode(conf()); err != nil {
-					panic(err)
-				}
-				req, err := http.NewRequest("POST",
-					fmt.Sprintf("http://%s:8080/v2/apps", marathonHost), body)
-				if err != nil {
-					log.Fatal(err)
-				}
-				req.Header.Set("Content-Type", "application/json")
-
 				for i := 0; i < retries; i++ {
+					body := bytes.NewBuffer([]byte{})
+					err := json.NewEncoder(body).Encode(conf())
+					if err != nil {
+						panic(err)
+					}
+					req, err := http.NewRequest("POST",
+						fmt.Sprintf("http://%s:8080/v2/apps", marathonHost),
+						body)
+					if err != nil {
+						log.Fatal(err)
+					}
+					req.Header.Set("Content-Type", "application/json")
+
 					resp, err := (&http.Client{}).Do(req)
 					if err != nil {
 						log.Fatal(err)
