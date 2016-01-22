@@ -8,8 +8,6 @@ import (
 	"testing"
 )
 
-const testModuleDir = "test-modules/larskluge"
-
 func TestConfig(t *testing.T) {
 	wd, err := os.Getwd()
 	if err != nil {
@@ -17,6 +15,7 @@ func TestConfig(t *testing.T) {
 	}
 	modules, _ := filepath.Glob(filepath.Join(wd, testModuleDir, "*"))
 	for _, path := range modules {
+		_conf = nil // clear conf() cache
 		// cd to the module dir
 		if err := os.Chdir(path); err != nil {
 			panic(err)

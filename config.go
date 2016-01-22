@@ -37,7 +37,7 @@ type config struct {
 var overwrites config
 
 func init() {
-	contents, err := ioutil.ReadFile(".babl-build.yml")
+	contents, err := ioutil.ReadFile("babl.yml")
 	if err == nil {
 		_ = yaml.Unmarshal(contents, &overwrites) // ignore error
 	}

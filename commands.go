@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"regexp"
 	"strings"
 	"syscall"
@@ -25,10 +24,15 @@ import (
 const retries = 3
 
 var stdout io.Writer = os.Stdout // allow reassignment
+var _conf *config = nil          // cache conf()'s result
 
 // auxiliary functions
 
 func conf() config {
+	if _conf != nil {
+		return *_conf
+	}
+
 	var c config
 	contents, err := Asset("build-config.yml")
 	if err != nil {
@@ -37,16 +41,19 @@ func conf() config {
 	if err := yaml.Unmarshal(contents, &c); err != nil {
 		panic(err)
 	}
-	if contents, err = ioutil.ReadFile(".babl-build.yml"); err == nil {
-		var local config
-		if err := yaml.Unmarshal(contents, &local); err != nil {
-			log.Fatal(err)
-		}
-		if err := mergo.MergeWithOverwrite(&c, local); err != nil {
-			panic(err)
-		}
+	if contents, err = ioutil.ReadFile("babl.yml"); err != nil {
+		log.Fatal(err)
 	}
-	c.Id = id()
+
+	var local config
+	if err := yaml.Unmarshal(contents, &local); err != nil {
+		log.Fatal(err)
+	}
+	if err := mergo.MergeWithOverwrite(&c, local); err != nil {
+		panic(err)
+	}
+
+	_conf = &c
 	c.Container.Docker.Image = image()
 	c.Env.BablModule = module()
 	return c
@@ -83,7 +90,7 @@ func getOutput(cmd string, args ...string) string {
 }
 
 func id() string {
-	return fmt.Sprintf("%s-%s", _type(), module())
+	return conf().Id
 }
 
 func image() string {
@@ -95,11 +102,7 @@ func imageLatest() string {
 }
 
 func module() string {
-	dir, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	return filepath.Base(dir)
+	return id()
 }
 
 func _type() string {
