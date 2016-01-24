@@ -113,8 +113,18 @@ func _type() string {
 }
 
 func version() string {
-	return "v" + strings.TrimSpace(getOutput(
-		"git", "rev-list", "HEAD", "--count"))
+	output, err := exec.Command("git", "rev-list", "HEAD", "--count").Output()
+	if err == nil {
+		return "v" + strings.TrimSpace(string(output))
+	} else {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			if exitErr.Sys().(syscall.WaitStatus).ExitStatus() == 128 {
+				return "v0"
+			}
+		}
+	}
+	log.Fatal(err)
+	return "fail"
 }
 
 // commands proper
