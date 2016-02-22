@@ -7,7 +7,6 @@ import (
 )
 
 func TestId(t *testing.T) {
-	t.Log("testing a bit here")
 	path := filepath.Join(testModuleDir(), "string-upcase")
 	if err := os.Chdir(path); err != nil {
 		panic(err)
