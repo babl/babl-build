@@ -24,7 +24,7 @@ type config struct {
 	} `yaml:"container" json:"container"`
 	Instances int      `yaml:"instances" json:"instances"`
 	Cpus      float64  `yaml:"cpus" json:"cpus"`
-	Mem       float64  `yaml:"mem" json:"mem"`
+	Mem       *float64 `yaml:"mem" json:"mem"`
 	Uris      []string `yaml:"uris" json:"uris"`
 	Env       struct {
 		ServiceTags string `yaml:"SERVICE_TAGS" json:"SERVICE_TAGS"`

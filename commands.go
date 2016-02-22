@@ -53,6 +53,11 @@ func conf() config {
 		panic(err)
 	}
 
+	// Ugly hack to support unlimited memory usage / zero value
+	if local.Mem != nil && *local.Mem == 0 {
+		*c.Mem = 0
+	}
+
 	_conf = &c
 	c.Container.Docker.Image = image()
 	c.Env.BablModule = module()
