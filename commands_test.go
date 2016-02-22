@@ -8,11 +8,7 @@ import (
 
 func TestId(t *testing.T) {
 	t.Log("testing a bit here")
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	path := filepath.Join(wd, testModuleDir, "string-upcase")
+	path := filepath.Join(testModuleDir(), "string-upcase")
 	if err := os.Chdir(path); err != nil {
 		panic(err)
 	}

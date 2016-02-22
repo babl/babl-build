@@ -9,12 +9,9 @@ import (
 )
 
 func TestConfig(t *testing.T) {
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	modules, _ := filepath.Glob(filepath.Join(wd, testModuleDir, "*"))
+	modules, _ := filepath.Glob(filepath.Join(testModuleDir(), "*"))
 	for _, path := range modules {
+		t.Logf("Check %s", path)
 		_conf = nil // clear conf() cache
 		// cd to the module dir
 		if err := os.Chdir(path); err != nil {
