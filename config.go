@@ -14,6 +14,10 @@ type config struct {
 			Image          string `yaml:"image" json:"image"`
 			ForcePullImage bool   `yaml:"forcePullImage" json:"forcePullImage"`
 			Network        string `yaml:"network" json:"network"`
+			Parameters     []struct {
+				Key   string `yaml:"key" json:"key"`
+				Value string `yaml:"value" json:"value"`
+			} `yaml:"parameters" json:"parameters,omitempty"`
 		} `yaml:"docker" json:"docker"`
 		Options []string `yaml:"options" json:"options,omitempty"`
 		Volumes []struct {
