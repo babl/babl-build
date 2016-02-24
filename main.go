@@ -1,3 +1,5 @@
+//go:generate go-bindata build-config.yml
+
 package main
 
 import (
