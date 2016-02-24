@@ -61,6 +61,7 @@ func conf() config {
 	_conf = &c
 	c.Container.Docker.Image = image()
 	c.Env.BablModule = module()
+	c.Env.BablModuleVersion = version()
 	return c
 }
 
@@ -243,8 +244,11 @@ func init() {
 			"Play (run) a local built Babl module",
 			func(args ...string) {
 				execArgs := []string{"docker", "run", "-it", "--rm", "-p",
-					"4444:4444", "-e", "BABL_MODULE=" + module(), "-e",
-					"BABL_COMMAND=/bin/app"}
+					"4444:4444",
+					"-e", "BABL_MODULE=" + module(),
+					"-e", "BABL_MODULE_VERSION=" + version(),
+					"-e", "BABL_COMMAND=/bin/app",
+				}
 				execArgs = append(execArgs, containerOptions()...)
 				execArgs = append(execArgs, image())
 				execute(execArgs[0], execArgs[1:]...)
@@ -253,9 +257,11 @@ func init() {
 		"sh": {
 			"Run the container with a shell",
 			func(args ...string) {
-				execArgs := []string{"docker", "run", "-it", "--rm", "-p",
-					"4444:4444", "-e", "BABL_MODULE=" + module(), "-e",
-					"BABL_COMMAND=/bin/app"}
+				execArgs := []string{"docker", "run", "-it", "--rm", "-p", "4444:4444",
+					"-e", "BABL_MODULE=" + module(),
+					"-e", "BABL_MODULE_VERSION=" + version(),
+					"-e", "BABL_COMMAND=/bin/app",
+				}
 				execArgs = append(execArgs, containerOptions()...)
 				execArgs = append(execArgs, image(), "sh")
 				execute(execArgs[0], execArgs[1:]...)

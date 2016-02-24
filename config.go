@@ -31,9 +31,10 @@ type config struct {
 	Mem       *float64 `yaml:"mem" json:"mem"`
 	Uris      []string `yaml:"uris" json:"uris"`
 	Env       struct {
-		ServiceTags string `yaml:"SERVICE_TAGS" json:"SERVICE_TAGS"`
-		BablModule  string `yaml:"BABL_MODULE" json:"BABL_MODULE"`
-		BablCommand string `yaml:"BABL_COMMAND" json:"BABL_COMMAND"`
+		ServiceTags       string `yaml:"SERVICE_TAGS" json:"SERVICE_TAGS"`
+		BablModule        string `yaml:"BABL_MODULE" json:"BABL_MODULE"`
+		BablModuleVersion string `yaml:"BABL_MODULE_VERSION" json:"BABL_MODULE_VERSION"`
+		BablCommand       string `yaml:"BABL_COMMAND" json:"BABL_COMMAND"`
 	} `yaml:"env" json:"env"`
 	Cmd string `yaml:"cmd" json:"cmd"`
 }
