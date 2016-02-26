@@ -245,6 +245,7 @@ func init() {
 			func(args ...string) {
 				execArgs := []string{"docker", "run", "-it", "--rm", "-p",
 					"4444:4444",
+					"-e", "PORT=4444",
 					"-e", "BABL_MODULE=" + module(),
 					"-e", "BABL_MODULE_VERSION=" + version(),
 					"-e", "BABL_COMMAND=/bin/app",
