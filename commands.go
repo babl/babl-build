@@ -58,6 +58,16 @@ func conf() config {
 		*c.Mem = 0
 	}
 
+	if c.Env.ServiceTags == "web" {
+		reg := regexp.MustCompile(":4[0-9]+$")
+		for i := 0; i < len(c.Container.Docker.Parameters); i++ {
+			param := &c.Container.Docker.Parameters[i]
+			if param.Key == "log-opt" {
+				param.Value = reg.ReplaceAllString(param.Value, ":4990")
+			}
+		}
+	}
+
 	_conf = &c
 	c.Container.Docker.Image = image()
 	c.Env.BablModule = module()
