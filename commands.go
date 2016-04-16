@@ -241,11 +241,9 @@ func init() {
 				}
 			},
 		},
-		"dist": {
-			"build & push & destroy & deploy",
+		"restart": {
+			"restart all instances of this module",
 			func(args ...string) {
-				commands["build"].Func()
-				commands["push"].Func()
 				commands["destroy"].Func()
 				commands["deploy"].Func()
 			},
