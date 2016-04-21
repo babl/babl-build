@@ -110,7 +110,7 @@ func id() string {
 }
 
 func image() string {
-	return fmt.Sprintf("registry.babl.sh:5000/%s:%s", id(), version())
+	return fmt.Sprintf("registry.babl.sh/%s:%s", id(), version())
 }
 
 func imageLatest() string {
