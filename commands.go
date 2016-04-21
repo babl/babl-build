@@ -160,7 +160,7 @@ func init() {
 				cmd := append([]string{"build", "-t", image()}, args...)
 				cmd = append(cmd, ".")
 				execute("docker", cmd...)
-				execute("docker", "tag", "-f", image(), imageLatest())
+				execute("docker", "tag", image(), imageLatest())
 			},
 		},
 		"version": {
