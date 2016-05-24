@@ -160,7 +160,13 @@ func init() {
 				cmd := append([]string{"build", "-t", image()}, args...)
 				cmd = append(cmd, ".")
 				execute("docker", cmd...)
-				execute("docker", "tag", image(), imageLatest())
+
+				cmd = []string{"tag"}
+				if forceTagSupported() {
+					cmd = append(cmd, "--force")
+				}
+				cmd = append(cmd, image(), imageLatest())
+				execute("docker", cmd...)
 			},
 		},
 		"version": {
@@ -281,4 +287,11 @@ func init() {
 			help,
 		},
 	}
+}
+
+func forceTagSupported() bool {
+	cmd := exec.Command("docker", "help", "tag")
+	stdout, err := cmd.Output()
+	check(err)
+	return regexp.MustCompile("(?m:-force)").Match(stdout)
 }
