@@ -4,7 +4,9 @@ container:
   docker:
     image: ...
     forcePullImage: true
-    network: HOST
+    network: BRIDGE
+    portMappings:
+      - hostPort: 0
     parameters:
       -
         key: log-driver

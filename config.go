@@ -14,7 +14,13 @@ type config struct {
 			Image          string `yaml:"image" json:"image"`
 			ForcePullImage bool   `yaml:"forcePullImage" json:"forcePullImage"`
 			Network        string `yaml:"network" json:"network"`
-			Parameters     []struct {
+			PortMappings   []struct {
+				ContainerPort int    `yaml:"containerPort" json:"containerPort,omitempty"`
+				HostPort      int    `yaml:"hostPort" json:"hostPort"`
+				ServicePort   int    `yaml:"servicePort" json:"servicePort,omitempty"`
+				Protocol      string `yaml:"protocol" json:"protocol,omitempty"`
+			} `yaml:"portMappings" json:"portMappings,omitempty"`
+			Parameters []struct {
 				Key   string `yaml:"key" json:"key"`
 				Value string `yaml:"value" json:"value"`
 			} `yaml:"parameters" json:"parameters,omitempty"`
