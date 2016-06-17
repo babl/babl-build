@@ -12,7 +12,7 @@ type config struct {
 		Type   string `yaml:"type" json:"type"`
 		Docker struct {
 			Image          string `yaml:"image" json:"image"`
-			ForcePullImage bool   `yaml:"forcePullImage" json:"forcePullImage"`
+			ForcePullImage bool   `yaml:"forcePullImage" json:"forcePullImage,omitempty"`
 			Network        string `yaml:"network" json:"network"`
 			PortMappings   []struct {
 				ContainerPort int    `yaml:"containerPort" json:"containerPort,omitempty"`

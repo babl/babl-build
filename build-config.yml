@@ -3,7 +3,7 @@ container:
   type: DOCKER
   docker:
     image: ...
-    forcePullImage: true
+    forcePullImage: false
     network: BRIDGE
     portMappings:
       - hostPort: 0
