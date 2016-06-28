@@ -41,6 +41,7 @@ type config struct {
 		BablModule        string `yaml:"BABL_MODULE" json:"BABL_MODULE"`
 		BablModuleVersion string `yaml:"BABL_MODULE_VERSION" json:"BABL_MODULE_VERSION"`
 		BablCommand       string `yaml:"BABL_COMMAND" json:"BABL_COMMAND"`
+		BablKafkaBrokers  string `yaml:"BABL_KAFKA_BROKERS" json:"BABL_KAFKA_BROKERS"`
 	} `yaml:"env" json:"env"`
 	Cmd string `yaml:"cmd" json:"cmd"`
 }

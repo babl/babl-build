@@ -25,4 +25,5 @@ env:
   SERVICE_TAGS: babl
   BABL_MODULE: ...
   BABL_COMMAND: /bin/app
+  BABL_KAFKA_BROKERS: queue.babl.sh:9092
 cmd: babl-server
