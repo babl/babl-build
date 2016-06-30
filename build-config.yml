@@ -19,7 +19,7 @@ container:
         value: env=BABL_MODULE,BABL_MODULE_VERSION,SERVICE_TAGS
 instances: 1
 cpus: 0.1
-mem: 8
+mem: 16
 uris: []
 env:
   SERVICE_TAGS: babl
