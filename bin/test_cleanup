@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+dirs = Dir["test/fixtures/modules/*/.git"].join(" ")
+`rm -rf #{dirs}`

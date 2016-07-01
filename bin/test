@@ -1,5 +1,5 @@
 #!/bin/sh
 
-tar xzf test-modules.tgz
+bin/test_prepare
 go test -v
-rm -rf test-modules
+bin/test_cleanup

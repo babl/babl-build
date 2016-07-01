@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+Dir["test/fixtures/modules/*/.git.test"].each do |from|
+  to = from.chomp(".test")
+  `cp -r #{from} #{to}`
+end
