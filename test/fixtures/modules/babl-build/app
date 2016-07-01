@@ -1,0 +1,11 @@
+#!/bin/bash -xe
+
+path=$(mktemp -d -t "babl-build.XXXXXXXXXX")
+
+cd $path
+mkdir $MODULE
+cd $MODULE
+tar xfz -
+ls &>2
+babl-build build
+babl-build push

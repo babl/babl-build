@@ -1,0 +1,33 @@
+id: larskluge/babl-build
+mem: 128
+cpus: 0.5
+container:
+  volumes:
+    -
+      hostPath: /var/run/docker.sock
+      containerPath: /var/run/docker.sock
+      mode: RW
+    -
+      hostPath: /usr/bin/docker
+      containerPath: /bin/docker
+      mode: RO
+    -
+      hostPath: /cgroup
+      containerPath: /cgroup
+      mode: RW
+    -
+      hostPath: /sys
+      containerPath: /sys
+      mode: RW
+    -
+      hostPath: /usr/lib64/libsystemd.so.0
+      containerPath: /lib/libsystemd.so.0
+      mode: RW
+    -
+      hostPath: /usr/lib64/libdevmapper.so.1.02
+      containerPath: /lib/libdevmapper.so.1.02
+      mode: RW
+    -
+      hostPath: /usr/lib64/libgcrypt.so.20
+      containerPath: /lib/libgcrypt.so.20'
+      mode: RW

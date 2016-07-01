@@ -1,0 +1,18 @@
+0000000000000000000000000000000000000000 651f7a27f83c84257e66cc9f7afb9d719c4a2595 Lars Kluge <l@larskluge.com> 1452776783 +0100	commit (initial): .
+651f7a27f83c84257e66cc9f7afb9d719c4a2595 9fe98d5270c508299db059ffeb379176d3a7a796 Lars Kluge <l@larskluge.com> 1452788552 +0100	commit: A step closer
+9fe98d5270c508299db059ffeb379176d3a7a796 71a30007c8e0b7eae16b605850c13c79c51dbfbe Lars Kluge <l@larskluge.com> 1452803780 +0100	commit: Boom
+71a30007c8e0b7eae16b605850c13c79c51dbfbe 3e838660b3ab0a3120a90d50218b7b6b8c338d52 Lars Kluge <l@larskluge.com> 1452807661 +0100	commit: Allow to run docker command in container
+3e838660b3ab0a3120a90d50218b7b6b8c338d52 e8577a80d5c3f5e92bc3991723dbd601ea2bc846 Lars Kluge <l@larskluge.com> 1452807692 +0100	commit: Make sure path is correct to execute command in
+e8577a80d5c3f5e92bc3991723dbd601ea2bc846 9f640e729a87104d871e4d771dc90837ef3529b3 Lars Kluge <l@larskluge.com> 1452807713 +0100	commit: Add config option for marathon host
+9f640e729a87104d871e4d771dc90837ef3529b3 6641e3ffd982d1bbd7955b501dd963218ed42c7d Lars Kluge <l@larskluge.com> 1452809884 +0100	commit: Make sure the private key is private
+6641e3ffd982d1bbd7955b501dd963218ed42c7d ce2738abcaf540180e3e4bbb19269adb4da5f732 Lars Kluge <l@larskluge.com> 1452866695 +0100	commit: Fix when repo already exists
+ce2738abcaf540180e3e4bbb19269adb4da5f732 a510abb7f9a26ba97eeef3b64b5832e922bc1503 Lars Kluge <l@larskluge.com> 1452866703 +0100	commit: Clean up build script
+a510abb7f9a26ba97eeef3b64b5832e922bc1503 7605a9b6da4faa202592b6026a6be021e72e5b65 Lars Kluge <l@larskluge.com> 1452866969 +0100	commit: Rm babl-build
+7605a9b6da4faa202592b6026a6be021e72e5b65 f15deaf86c5bc6f3df1e46f5baa48a04ef754694 Lars Kluge <l@larskluge.com> 1452866995 +0100	commit: Link to babl-build
+f15deaf86c5bc6f3df1e46f5baa48a04ef754694 0b03a3fbcd7751db3cbce9f310bd350f572ee39e Lars Kluge <l@larskluge.com> 1452869393 +0100	commit: Move towards tar'd file input to make it more universal usable
+0b03a3fbcd7751db3cbce9f310bd350f572ee39e a0dda669b1cae97a428a651a93e532b321e2d5e1 Lars Kluge <l@larskluge.com> 1452874646 +0100	commit: Let’s try another approach via tar’d input files
+a0dda669b1cae97a428a651a93e532b321e2d5e1 4edeb9b8610ee608ec22ece153a98775e05195a9 Lars Kluge <l@larskluge.com> 1452875219 +0100	commit: Make it work
+4edeb9b8610ee608ec22ece153a98775e05195a9 4f998945e295c2479db6bb886d748178c0b7d993 Lars Kluge <l@larskluge.com> 1456364452 -0600	commit: latest
+4f998945e295c2479db6bb886d748178c0b7d993 51d88051b54f0223035f0c417c4ca115b9212115 Lars Kluge <l@larskluge.com> 1456364515 -0600	commit: config change
+51d88051b54f0223035f0c417c4ca115b9212115 d858fe7280e62e28818922da7e4e87f2b9ab307f Lars Kluge <l@larskluge.com> 1456364623 -0600	commit (amend): config change
+d858fe7280e62e28818922da7e4e87f2b9ab307f bdf809117fd12c094c60dd54447a0727fe78a995 Lars Kluge <l@larskluge.com> 1456364630 -0600	commit (amend): config change

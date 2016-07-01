@@ -1,0 +1,11 @@
+0000000000000000000000000000000000000000 58fa3b32bcb2a88c3248823295438a52b5767f29 Lars Kluge <l@larskluge.com> 1447636392 +0700	commit (initial): .
+58fa3b32bcb2a88c3248823295438a52b5767f29 96ea87c15075423ff3d144e738aeb691160ba198 Lars Kluge <l@larskluge.com> 1447636821 +0700	commit: Use a random imagemagick Docker image..
+96ea87c15075423ff3d144e738aeb691160ba198 239ea3afaf672f03c4feb6157915f4cfa3153e9e Lars Kluge <l@larskluge.com> 1447636828 +0700	commit: Make script verbose
+239ea3afaf672f03c4feb6157915f4cfa3153e9e eb188cbcb15fbd4cdb59d2cd7e5fa9b80e97e156 Lars Kluge <l@larskluge.com> 1447638356 +0700	commit: How about more ram?
+eb188cbcb15fbd4cdb59d2cd7e5fa9b80e97e156 17d557204d781d653b5dd8b8e6e1e006d2417509 Lars Kluge <l@larskluge.com> 1448015202 +0700	commit: rebuild
+17d557204d781d653b5dd8b8e6e1e006d2417509 dc3e9f8cf3dedab642cca6efed5326dbf59d2543 Lars Kluge <l@larskluge.com> 1449575026 +0700	commit: rebuild
+dc3e9f8cf3dedab642cca6efed5326dbf59d2543 489880f33a64e10fc26567790a0ec0823d3ac837 Lars Kluge <l@larskluge.com> 1450163022 +0700	commit: rebuild
+489880f33a64e10fc26567790a0ec0823d3ac837 25e2d18fae1479a3e75b3245f7366bb1dfc6d932 Lars Kluge <l@larskluge.com> 1450258345 +0700	commit: rebuild
+25e2d18fae1479a3e75b3245f7366bb1dfc6d932 31075229f20490e9778a5171d4b4c03e4d7439ca Lars Kluge <l@larskluge.com> 1452693006 +0100	commit: More power
+31075229f20490e9778a5171d4b4c03e4d7439ca 38c042214aeac2579c0ec2204d9978ac7ffcadf0 Lars Kluge <l@larskluge.com> 1456364525 -0600	commit: latest
+38c042214aeac2579c0ec2204d9978ac7ffcadf0 56056f8f2a1d8bc00a33609d2ddc16c5bf75126a Lars Kluge <l@larskluge.com> 1456364586 -0600	commit: config change
