@@ -93,3 +93,16 @@ func TestVolumeMounts(t *testing.T) {
 		t.Errorf("config mismatch: want %s; got %s", expected, actual)
 	}
 }
+
+func TestHostNotUsingPortMappings(t *testing.T) {
+	c := execConfigParsed("host-network")
+	expected := "HOST"
+	actual := c.Container.Docker.Network
+	if expected != actual {
+		t.Errorf("config mismatch: want %s; got %s", expected, actual)
+	}
+	actual2 := c.Container.Docker.PortMappings
+	if actual2 != nil {
+		t.Errorf("config mismatch: want %s; got %s", nil, actual2)
+	}
+}

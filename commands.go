@@ -68,6 +68,10 @@ func conf() config {
 		}
 	}
 
+	if c.Container.Docker.Network == "HOST" {
+		c.Container.Docker.PortMappings = nil
+	}
+
 	_conf = &c
 	c.Container.Docker.Image = image()
 	c.Env.BablModule = module()

@@ -1,0 +1,4 @@
+id: host-network
+container:
+  docker:
+    network: HOST
