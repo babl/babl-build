@@ -179,6 +179,12 @@ func init() {
 				fmt.Println(version())
 			},
 		},
+		"image": {
+			"Print docker image",
+			func(args ...string) {
+				fmt.Println(image())
+			},
+		},
 		"config": {
 			"Print the Marathon JSON config",
 			func(args ...string) {
