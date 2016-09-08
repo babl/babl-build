@@ -267,8 +267,7 @@ func init() {
 		"play": {
 			"Play (run) a local built Babl module",
 			func(args ...string) {
-				execArgs := []string{"docker", "run", "-it", "--rm", "-p",
-					"4444:4444",
+				execArgs := []string{"docker", "run", "-it", "--rm", "-p", "4444:4444",
 					"-e", "PORT=4444",
 					"-e", "BABL_MODULE=" + module(),
 					"-e", "BABL_MODULE_VERSION=" + version(),
@@ -289,6 +288,21 @@ func init() {
 				}
 				execArgs = append(execArgs, containerOptions()...)
 				execArgs = append(execArgs, image(), "sh")
+				execute(execArgs[0], execArgs[1:]...)
+			},
+		},
+		"run-in-production": {
+			"Run one instance of this module in production",
+			func(args ...string) {
+				execArgs := []string{"docker", "run", "-it", "--rm", "-p", "4444",
+					"-e", "PORT=4444",
+					"-e", "BABL_MODULE=" + module(),
+					"-e", "BABL_MODULE_VERSION=" + version(),
+					"-e", "BABL_COMMAND=/bin/app",
+					"-e", "BABL_KAFKA_BROKERS=queue.babl.sh:9092",
+				}
+				execArgs = append(execArgs, containerOptions()...)
+				execArgs = append(execArgs, image())
 				execute(execArgs[0], execArgs[1:]...)
 			},
 		},
