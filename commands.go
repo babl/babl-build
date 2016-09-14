@@ -87,8 +87,11 @@ func containerOptions() []string {
 }
 
 func execute(name string, args ...string) {
-	fmt.Println(name + " " + strings.Join(args, " "))
-	if !dryRun {
+	msg := name + " " + strings.Join(args, " ")
+	if dryRun {
+		fmt.Println(msg)
+	} else {
+		fmt.Fprintln(os.Stderr, msg)
 		cmd := exec.Command(name, args...)
 		cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
 		if err := cmd.Run(); err != nil {
