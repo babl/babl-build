@@ -182,6 +182,15 @@ func init() {
 				fmt.Println(version())
 			},
 		},
+		"versions": {
+			"Print module and babl-server version",
+			func(args ...string) {
+				fmt.Println("module: " + version())
+
+				execArgs := []string{"docker", "run", "--rm", image(), "babl-server", "-version"}
+				execute(execArgs[0], execArgs[1:]...)
+			},
+		},
 		"image": {
 			"Print docker image",
 			func(args ...string) {
